@@ -10,7 +10,10 @@ from libs.solver import Solver
 
 res = requests.get("https://discord.com/login").text
 file_with_build_num = 'https://discord.com/assets/' + \
-    re.compile(r'assets/+([a-z0-9]+)\.js').findall(res)[-2]+'.js'
+    matches = re.compile(r'assets/+([a-z0-9]+)\.js').findall(res)
+if len(matches) < 2:
+    raise ValueError("Not enough matches found in the response text")
+file_with_build_num = 'https://discord.com/assets/' + matches[-2] + '.js'
 req_file_build = requests.get(file_with_build_num).text
 index_of_build_num = req_file_build.find('buildNumber')+24
 buildNumb = int(req_file_build[index_of_build_num:index_of_build_num+6])
